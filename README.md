@@ -12,7 +12,7 @@ Ensure you have Python installed and follow these steps:
 apt update -y
 apt upgrade -y
 apt install git -y
-git clone https://github.com/Cyber-Programer/website-info/edit
+git clone https://github.com/Cyber-Programer/website-info/
 cd website-info
 python main.py
 ```
