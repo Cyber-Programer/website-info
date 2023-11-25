@@ -9,7 +9,11 @@ except ModuleNotFoundError:
     os.system('pip uninstall whois')
 import sys
 from time import sleep as s
-from colorama import init, Fore, Style
+try:
+    from colorama import init, Fore, Style
+except:
+    import os
+    os.system('pip install colorama')
 
 
 class colors:
@@ -120,8 +124,6 @@ def web_info(url):
     creation_date = result.creation_date
     if creation_date is None or creation_date == 'null':
         creation_date_display = colors.RED + 'Not Available' + colors.RESET
-    elif isinstance(result.creation_date,list):
-        creation_date_display = colors.GREEN+'\n'.join(result.creation_date)+colors.RESET
     else:
         creation_date_display = colors.GREEN +str(creation_date) +colors.RESET
     
