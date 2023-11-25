@@ -8,9 +8,14 @@ This Python script retrieves WHOIS information for a given domain name. It utili
 
 Ensure you have Python installed and follow these steps:
 
-1. Clone the repository: `git clone https://github.com/your_username/whois-information-tool.git`
-2. Navigate to the project directory: `cd whois-information-tool`
-3. Install dependencies: `pip install -r requirements.txt`
+```
+apt update -y
+apt upgrade -y
+apt install git -y
+git clone https://github.com/Cyber-Programer/website-info/edit
+cd website-info
+python main.py
+```
 
 ### Usage
 
