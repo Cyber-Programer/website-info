@@ -52,146 +52,219 @@ except KeyboardInterrupt:
 passer = argparse.ArgumentParser()
 
 passer.add_argument('-d','--domain' ,help='Domain name (example.com)',type=str,required=True)
+passer.add_argument('-i', '--ip', help='Display IP address only', action='store_true')
+passer.add_argument('-u', '--up', help='Display Updated date only', action='store_true')
+passer.add_argument('-c', '--cp', help='Display Creation date only', action='store_true')
+passer.add_argument('-r', '--rg', help='Display registrar', action='store_true')
+passer.add_argument('-n', '--ns', help='Display Name Servers', action='store_true')
+passer.add_argument('-e', '--em', help='Display emails', action='store_true')
+passer.add_argument('-ct', '--city', help='Display city', action='store_true')
+passer.add_argument('-con', '--country', help='Display country', action='store_true')
+passer.add_argument('-a', '--all', help='Display all information', action='store_true')
 
 args = passer.parse_args()
 
 
 def web_info(url):
-
+    
     result = whois.whois(url)
     dom = ''
+    data =''
 
-
-    ip = socket.gethostbyname(url)
+    ip = None  # Initialize ip variable
     
-    if isinstance(result.name_servers,list):
-        name_server = colors.GREEN+'\n'.join(result.name_servers)+colors.RESET
-    elif result.name_servers is None or result.name_servers == 'null':
-        name_server = colors.RED + 'Not Available' + colors.RESET
-    else:
-        name_server = colors.GREEN+str(result.name_servers)+colors.RESET
+    if args.ip:
+        try:
+            ip = socket.gethostbyname(url)
+            data += f'{colors.YELLOW}[+] IP: {ip}{colors.RESET}\n'
+        except socket.gaierror as e:
+            return f"Error: {e}"
 
-    # status = '\n'.join(result.status)
-    if isinstance(result.emails,list):
-        emails = '\n'.join(result.emails)
-    else:
-        emails = str(result.emails)
-        
-    registrar_info = result.get('registrar')
-    if registrar_info is None or registrar_info == 'null':
-        registrar_display = colors.RED + 'Not Available' + colors.RESET
-    elif isinstance(result.registrar_info,list):
-        registrar_display = colors.GREEN+'\n'.join(result.registrar_info)+colors.RESET
-    else:
-        registrar_display = colors.GREEN +registrar_info +colors.RESET
-    
-    whois_server_info = result.whois_server
-    if whois_server_info is None or whois_server_info == 'null':
-        whois_disply = colors.RED + 'Not Available' + colors.RESET
-    else:
-        whois_disply = colors.GREEN +whois_server_info +colors.RESET
-        
-
-    domain_name = result.domain_name
-    if domain_name is None or domain_name == 'null':
-        domain_display = colors.RED + 'Not Available' + colors.RESET
-    else:
-        for i in result.domain_name:
-            dom += i.lower()
-            break
-        if isinstance(result.domain_name,list):
-            domain_display = ', '.join(result.domain_name)
+    if args.rg:
+        registrar_info = result.get('registrar')
+        if registrar_info is None or registrar_info == 'null':
+            data += f'{colors.RED}[-] Registrar: Not Available{colors.RESET}\n'
+        elif isinstance(result.registrar_info, list):
+            data += f'{colors.GREEN}[+] Registrar: '+'\n'.join(result.registrar_info)+f'{colors.RESET}\n'
         else:
-            domain_display = colors.GREEN +domain_name +colors.RESET
+            data += f'{colors.GREEN}[+] Registrar: {registrar_info}\n\n{colors.RESET}'
+
+    if args.up:
+        updated_date = result.updated_date
+        if updated_date is None or updated_date == 'null':
+            data += colors.RED +'[-] Updated date: '+'Not Available' + colors.RESET+'\n'
+        elif isinstance(result.update_date,list):
+            data += colors.GREEN+'[+] Updated date: '+', '.join(result.update_date)+colors.RESET+'\n'
+        else:
+            data += colors.GREEN +'[+] Updated date: '+str(updated_date) +colors.RESET+'\n'
+
+    if args.cp:
+        creation_date = result.creation_date
+        if creation_date is None or creation_date == 'null':
+            data += colors.RED +'[-] Creation date: '+ 'Not Available' + colors.RESET+'\n'
+        else:
+            data += colors.GREEN +'[+] Creation date: '+str(creation_date) +colors.RESET+'\n'
+    
+    if args.ns:
+        if isinstance(result.name_servers,list):
+            data = colors.GREEN+'[+] Name servers : '+', '.join(result.name_servers)+colors.RESET+'\n'
+        elif result.name_servers is None or result.name_servers == 'null':
+            data += colors.RED + '[-] Name servers : '+'Not Available' + colors.RESET+'\n'
+        else:
+            data += colors.GREEN+'[+] Name servers : '+str(result.name_servers)+colors.RESET+'\n'
+
+    if args.em:
+        if isinstance(result.emails,list):
+            data += '[+] Emails : '+', '.join(result.data)+'\n'
+        else:
+            data += '[+] Emails : '+str(result.email)+'\n'
+
+    if args.city:
+        city = result.city
+        if city is None or city == 'null':
+            data += colors.RED + '[-] City : '+'Not Available' + colors.RESET+'\n'
+        else:
+            data += colors.GREEN +'[+] City : '+str(city) +colors.RESET+'\n'
+
+    if args.country:
+        country = result.country
+        if country is None or country == 'null':
+            data += colors.RED + '[-] Country : '+'Not Available' + colors.RESET+'\n'
+        else:
+            data += colors.GREEN +'[+] Country : '+str(country) +colors.RESET+'\n'
+
+    if args.all:
+
+        ip = socket.gethostbyname(url)
+        
+        if isinstance(result.name_servers,list):
+            name_server = colors.GREEN+'\n'.join(result.name_servers)+colors.RESET
+        elif result.name_servers is None or result.name_servers == 'null':
+            name_server = colors.RED + 'Not Available' + colors.RESET
+        else:
+            name_server = colors.GREEN+str(result.name_servers)+colors.RESET
+
+        # status = '\n'.join(result.status)
+        if isinstance(result.emails,list):
+            emails = '\n'.join(result.emails)
+        else:
+            emails = str(result.emails)
+            
+        registrar_info = result.get('registrar')
+        if registrar_info is None or registrar_info == 'null':
+            registrar_display = colors.RED + 'Not Available' + colors.RESET
+        elif isinstance(result.registrar_info,list):
+            registrar_display = colors.GREEN+'\n'.join(result.registrar_info)+colors.RESET
+        else:
+            registrar_display = colors.GREEN +registrar_info +colors.RESET
+        
+        whois_server_info = result.whois_server
+        if whois_server_info is None or whois_server_info == 'null':
+            whois_disply = colors.RED + 'Not Available' + colors.RESET
+        else:
+            whois_disply = colors.GREEN +whois_server_info +colors.RESET
+        
+
+        domain_name = result.domain_name
+        if domain_name is None or domain_name == 'null':
+            domain_display = colors.RED + 'Not Available' + colors.RESET
+        else:
+            for i in result.domain_name:
+                dom += i.lower()
+                break
+            if isinstance(result.domain_name,list):
+                domain_display = ', '.join(result.domain_name)
+            else:
+                domain_display = colors.GREEN +domain_name +colors.RESET
 
 
-    referral_url = result.whois_server
-    if referral_url is None or referral_url == 'null':
-        referral_url_display = colors.RED + 'Not Available' + colors.RESET
-    else:
-        if isinstance(result.referral_url,list):
-            referral_url_display = colors.GREEN +'\n'.join(result.referral_url) + colors.RESET
-        referral_url_display = colors.GREEN +referral_url +colors.RESET
+        referral_url = result.whois_server
+        if referral_url is None or referral_url == 'null':
+            referral_url_display = colors.RED + 'Not Available' + colors.RESET
+        else:
+            if isinstance(result.referral_url,list):
+                referral_url_display = colors.GREEN +'\n'.join(result.referral_url) + colors.RESET
+            referral_url_display = colors.GREEN +referral_url +colors.RESET
+            
+        updated_date = result.updated_date
+        if updated_date is None or updated_date == 'null':
+            updated_date_display = colors.RED + 'Not Available' + colors.RESET
+        elif isinstance(result.update_date,list):
+            updated_date_display = colors.GREEN+'\n'.join(result.update_date)+colors.RESET
+        else:
+            updated_date_display = colors.GREEN +str(updated_date) +colors.RESET
         
-    updated_date = result.updated_date
-    if updated_date is None or updated_date == 'null':
-        updated_date_display = colors.RED + 'Not Available' + colors.RESET
-    elif isinstance(result.update_date,list):
-        updated_date_display = colors.GREEN+'\n'.join(result.update_date)+colors.RESET
-    else:
-        updated_date_display = colors.GREEN +str(updated_date) +colors.RESET
-    
-    creation_date = result.creation_date
-    if creation_date is None or creation_date == 'null':
-        creation_date_display = colors.RED + 'Not Available' + colors.RESET
-    else:
-        creation_date_display = colors.GREEN +str(creation_date) +colors.RESET
-    
-    status = result.status
-    if status is None or status == 'null':
-        status_display = colors.RED + 'Not Available' + colors.RESET
-    elif isinstance(result.status,list):
-        status_display = colors.GREEN + '\n'.join(result.status)+colors.RESET
-    else:
-        status_display = colors.GREEN +str(status) +colors.RESET
-    
-    emails = result.emails
-    if emails is None or emails == 'null':
-        emails_display = colors.RED + 'Not Available' + colors.RESET
-    elif isinstance(result.emails,list):
-        emails_display = colors.GREEN+'\n'.join(result.emails)+colors.RESET
-    else:
-        emails_display = colors.GREEN +str(emails) +colors.RESET
-    
-    dnssec = result.dnssec
-    if dnssec is None or dnssec == 'null':
-        dnssec_display = colors.RED + 'Not Available' + colors.RESET
-    else:
-        dnssec_display = colors.GREEN +str(dnssec) +colors.RESET
-    
-    name = result.name
-    if name is None or name == 'null':
-        name_display = colors.RED + 'Not Available' + colors.RESET
-    else:
-        name_display = colors.GREEN +str(name) +colors.RESET
-    
-    org = result.org
-    if org is None or org == 'null':
-        org_display = colors.RED + 'Not Available' + colors.RESET
-    else:
-        org_display = colors.GREEN +str(org) +colors.RESET
-    
-    adress = result.adress
-    if adress is None or adress == 'null':
-        adress_display = colors.RED + 'Not Available' + colors.RESET
-    else:
-        adress_display = colors.GREEN +str(adress) +colors.RESET
-    
-    city = result.city
-    if city is None or city == 'null':
-        city_display = colors.RED + 'Not Available' + colors.RESET
-    else:
-        city_display = colors.GREEN +str(city) +colors.RESET
+        creation_date = result.creation_date
+        if creation_date is None or creation_date == 'null':
+            creation_date_display = colors.RED + 'Not Available' + colors.RESET
+        else:
+            creation_date_display = colors.GREEN +str(creation_date) +colors.RESET
         
-    state = result.state
-    if state is None or state == 'null':
-        state_display = colors.RED + 'Not Available' + colors.RESET
-    else:
-        state_display = colors.GREEN +str(state) +colors.RESET
+        status = result.status
+        if status is None or status == 'null':
+            status_display = colors.RED + 'Not Available' + colors.RESET
+        elif isinstance(result.status,list):
+            status_display = colors.GREEN + '\n'.join(result.status)+colors.RESET
+        else:
+            status_display = colors.GREEN +str(status) +colors.RESET
+        
+        emails = result.emails
+        if emails is None or emails == 'null':
+            emails_display = colors.RED + 'Not Available' + colors.RESET
+        elif isinstance(result.emails,list):
+            emails_display = colors.GREEN+'\n'.join(result.emails)+colors.RESET
+        else:
+            emails_display = colors.GREEN +str(emails) +colors.RESET
+        
+        dnssec = result.dnssec
+        if dnssec is None or dnssec == 'null':
+            dnssec_display = colors.RED + 'Not Available' + colors.RESET
+        else:
+            dnssec_display = colors.GREEN +str(dnssec) +colors.RESET
+        
+        name = result.name
+        if name is None or name == 'null':
+            name_display = colors.RED + 'Not Available' + colors.RESET
+        else:
+            name_display = colors.GREEN +str(name) +colors.RESET
+        
+        org = result.org
+        if org is None or org == 'null':
+            org_display = colors.RED + 'Not Available' + colors.RESET
+        else:
+            org_display = colors.GREEN +str(org) +colors.RESET
+        
+        adress = result.adress
+        if adress is None or adress == 'null':
+            adress_display = colors.RED + 'Not Available' + colors.RESET
+        else:
+            adress_display = colors.GREEN +str(adress) +colors.RESET
+        
+        city = result.city
+        if city is None or city == 'null':
+            city_display = colors.RED + 'Not Available' + colors.RESET
+        else:
+            city_display = colors.GREEN +str(city) +colors.RESET
+            
+        state = result.state
+        if state is None or state == 'null':
+            state_display = colors.RED + 'Not Available' + colors.RESET
+        else:
+            state_display = colors.GREEN +str(state) +colors.RESET
+        
+        registrant_postal_code = result.registrant_postal_code
+        if registrant_postal_code is None or registrant_postal_code == 'null':
+            registrant_postal_code_display = colors.RED + 'Not Available' + colors.RESET
+        else:
+            registrant_postal_code_display = colors.GREEN +str(registrant_postal_code) +colors.RESET
+        
+        country = result.country
+        if country is None or country == 'null':
+            country_display = colors.RED + 'Not Available' + colors.RESET
+        else:
+            country_display = colors.GREEN +str(country) +colors.RESET
     
-    registrant_postal_code = result.registrant_postal_code
-    if registrant_postal_code is None or registrant_postal_code == 'null':
-        registrant_postal_code_display = colors.RED + 'Not Available' + colors.RESET
-    else:
-        registrant_postal_code_display = colors.GREEN +str(registrant_postal_code) +colors.RESET
-    
-    country = result.country
-    if country is None or country == 'null':
-        country_display = colors.RED + 'Not Available' + colors.RESET
-    else:
-        country_display = colors.GREEN +str(country) +colors.RESET
-    
-    data = f'''
+        data += f'''
 {colors.MAGENTA}Ifo of {dom}:{colors.RESET}
 -----------------
 {colors.YELLOW}Ip : {ip}{colors.RESET} 
@@ -269,6 +342,7 @@ def web_info(url):
 if __name__ == '__main__':
     
     url =  args.domain
+    
     try:
         data = web_info(url)
         text_animation(data)
