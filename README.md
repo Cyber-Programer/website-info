@@ -22,12 +22,12 @@ python main.py
 Run the script from the command line by providing a domain name:
 
 ```bash
-python whois_info.py -d example.com
-
+python whois_info.py -d example.com -a
+```
 
 ## Help options
 
-```bash
+```
 usage: main.py [-h] -d DOMAIN [-i] [-u] [-c] [-r] [-n] [-e] [-ct] [-con] [-a]
 
 optional arguments:
