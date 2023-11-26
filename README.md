@@ -28,6 +28,16 @@ python whois_info.py -d example.com -a
 ## Help options
 
 ```
+#++++++++++++++++++#
+         ┓   •  ┏  
+    ┓┏┏┏┓┣┓  ┓┏┓╋┏┓
+    ┗┻┛┗ ┗┛  ┗┛┗┛┗┛
+    ┏•   ┓         
+    ╋┓┏┓┏┫┏┓┏┓     
+    ┛┗┛┗┗┻┗ ┛     
+        (2rootv3) 
+#++++++++++++++++++#
+
 usage: main.py [-h] -d DOMAIN [-i] [-u] [-c] [-r] [-n] [-e] [-ct] [-con] [-a]
 
 optional arguments:
