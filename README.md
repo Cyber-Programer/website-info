@@ -23,3 +23,25 @@ Run the script from the command line by providing a domain name:
 
 ```bash
 python whois_info.py -d example.com
+
+
+## Help options
+
+```
+usage: main.py [-h] -d DOMAIN [-i] [-u] [-c] [-r] [-n] [-e] [-ct] [-con] [-a]
+
+optional arguments:
+  -h, --help            show this help message and exit
+  -d DOMAIN, --domain DOMAIN
+                        Domain name (example.com)
+  -i, --ip              Display IP address only
+  -u, --up              Display Updated date only
+  -c, --cp              Display Creation date only
+  -r, --rg              Display registrar
+  -n, --ns              Display Name Servers
+  -e, --em              Display emails
+  -ct, --city           Display city
+  -con, --country       Display country
+  -a, --all             Display all information
+
+```
