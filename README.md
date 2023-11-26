@@ -27,7 +27,7 @@ python whois_info.py -d example.com
 
 ## Help options
 
-```
+```bash
 usage: main.py [-h] -d DOMAIN [-i] [-u] [-c] [-r] [-n] [-e] [-ct] [-con] [-a]
 
 optional arguments:
@@ -43,5 +43,4 @@ optional arguments:
   -ct, --city           Display city
   -con, --country       Display country
   -a, --all             Display all information
-
 ```
